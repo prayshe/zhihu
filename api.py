@@ -20,10 +20,12 @@ class Get(Call):
         @wraps(func)
         def wrapper(session, **kwargs):
             url = self._url.format(**kwargs)
-            response = session.get(url, params=self._params)
-            if response.status_code == 200:
-                return func(session, body=response.json())
-            return None
+            try:
+                response = session.get(url, params=self._params, timeout=10)
+                if response.status_code == 200:
+                    return func(session, body=response.json())
+            except:
+                pass
         return wrapper
 
 class Gets(Call):
@@ -37,14 +39,17 @@ class Gets(Call):
         @wraps(func)
         def wrapper(session, **kwargs):
             url = self._url.format(**kwargs)
-            response = session.get(url, params=self._params)
-            while response.status_code == 200:
-                body = response.json()
-                yield func(session, body=response.json())
-                if body['paging']['is_end']:
-                    break
-                self._params['offset'] += self._params['limit']
-                response = session.get(url, params=self._params)
+            try:
+                response = session.get(url, params=self._params, timeout=10)
+                while response.status_code == 200:
+                    body = response.json()
+                    yield func(session, body=response.json())
+                    if body['paging']['is_end']:
+                        break
+                    self._params['offset'] += self._params['limit']
+                    response = session.get(url, params=self._params, timeout=10)
+            except:
+                pass
         return wrapper
 
 @Get('https://www.zhihu.com/api/v4/members/{user}', {'include': 'gender, educations, employments'})
