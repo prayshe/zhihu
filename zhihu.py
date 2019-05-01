@@ -7,8 +7,6 @@ import os, time, threading
 def questions(qc, qq, *topics):
     def worker(e, session, topic, parser):
         for page in parser(session, topic=topic):
-            if e.is_set():
-                break
             for qid in page:
                 with qc:
                     while qq.full() and not e.is_set():
@@ -17,6 +15,8 @@ def questions(qc, qq, *topics):
                         break
                     qq.put(qid)
                     qc.notify_all()
+            if e.is_set():
+                break
     
     with requests.Session() as session:
         session.headers.update({
@@ -44,8 +44,6 @@ def questions(qc, qq, *topics):
 def authors(qc, qq, uc, uq):
     def worker(e, session, question):
         for page in parse_answer_authors(session, question=question):
-            if e.is_set():
-                break
             for uid in page:
                 with uc:
                     while uq.full() and not e.is_set():
@@ -54,6 +52,8 @@ def authors(qc, qq, uc, uq):
                         break
                     uq.put(uid)
                     uc.notify_all()
+            if e.is_set():
+                break
 
     with requests.Session() as session:
         session.headers.update({
