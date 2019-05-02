@@ -1,7 +1,7 @@
 from api import parse_user_profile, parse_user_followees, parse_answer_authors, parse_topic_essence, parse_top_questions
 import multiprocessing
 import requests
-import itertools
+import pymongo
 import os, time, threading
 
 def questions(e, qc, qq, *topics):
@@ -75,9 +75,13 @@ def authors(e, qc, qq, uc, uq):
                 uc.notify_all()
 
 def users(e, uc, uq):
-    def worker(session, user):
+    def worker(collection, session, user):
         profile = parse_user_profile(session, user=user)
-        print(profile)
+        if profile is not None:
+            try:
+                collection.insert_one(profile)
+            except:
+                pass
 
     with requests.Session() as session:
         session.headers.update({
@@ -86,13 +90,16 @@ def users(e, uc, uq):
         })
         
         try:
-            while not e.is_set():
-                with uc:
-                    while uq.empty() and not e.is_set():
-                        uc.wait()
-                    if e.is_set():
-                        break
-                    threading.Thread(target=worker, args=(session, uq.get())).start()
+            with pymongo.MongoClient('localhost', 27017) as client:
+                collection = client.zhihu.user
+                collection.create_index([('userid', pymongo.ASCENDING)], unique=True)
+                while not e.is_set():
+                    with uc:
+                        while uq.empty() and not e.is_set():
+                            uc.wait()
+                        if e.is_set():
+                            break
+                        threading.Thread(target=worker, args=(collection, session, uq.get())).start()
         except KeyboardInterrupt:
             pass
 
