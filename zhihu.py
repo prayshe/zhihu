@@ -4,9 +4,16 @@ import requests
 import pymongo
 import os, time, threading
 
+headers = {
+    'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.103 Safari/537.36',
+    'cookie': '_xsrf=34QBKlbYsWOa6pAv9Be9KA5MibA9Tj3I; _zap=85112886-e384-4a1a-b135-011d3faaf031; d_c0="AJAoz-h5Xw-PToxSV6_It8I2WlOwe_1IzaI=|1556885337"; capsion_ticket="2|1:0|10:1556885513|14:capsion_ticket|44:YjJlMTI2OWZmOGFlNDhmNGIxYTJkMWFhYjhjMmRjOWE=|fbc19dd00f446960807b812465a894c68dcc12f377e3d5fd6ab7b503f2241e7d"; z_c0="2|1:0|10:1556885646|4:z_c0|92:Mi4xQ2NPUERRQUFBQUFBa0NqUDZIbGZEeVlBQUFCZ0FsVk5qWDY1WFFBYTF1aTRERUNfcVVYd08xR3RxelZEY0psWGpn|ec7bc86c4cba889b4e598f6bd6028812ebc65723eb12d228c7a17b5bff50f6bf"; unlock_ticket="ALCiAV72qg4mAAAAYAJVTZU3zFwav-qluK06tGZsEiR5olvIIZxOZg=="; tst=r; q_c1=920ae1dd7bcc4bbaa83e98cc8d67f4e3|1556885669000|1556885669000; __gads=ID=0877452f834f2e4e:T=1556885695:S=ALNI_MbvyTk2cHW924u9UfAuD_oPJ9noGA; tgw_l7_route=578107ff0d4b4f191be329db6089ff48; anc_cap_id=262c4088a9d64f0eb5c7b6d509cbc625'
+}
+
 def questions(e, qc, qq, *topics):
     def worker(e, session, topic, parser):
+        total = 0
         for page in parser(session, topic=topic):
+            total += len(page)
             for qid in page:
                 with qc:
                     while qq.full() and not e.is_set():
@@ -17,12 +24,10 @@ def questions(e, qc, qq, *topics):
                     qc.notify_all()
             if e.is_set():
                 break
+        print(f'totally mined {total} questions for topic {topic}')
     
     with requests.Session() as session:
-        session.headers.update({
-            'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.103 Safari/537.36',
-            'cookie': 'tgw_l7_route=80f350dcd7c650b07bd7b485fcab5bf7; _xsrf=8WgJFvMzvXGII9bERhasbhUo1aAOY4fZ; _zap=237249fe-3997-4288-a8fb-92aefd58f1fc; d_c0="AKBoYAvIXA-PTqMisjsjaKDFOdx6u1SUJNI=|1556704493"; capsion_ticket="2|1:0|10:1556704537|14:capsion_ticket|44:Nzc0NDQyMGY1NjY1NDE3NzgzNGI1MmI1ZjEwMjk3ODg=|9a9f4f37ac5a515f0b70daa078bd1434450ef53100afead185770527a8b60e57"; z_c0="2|1:0|10:1556704546|4:z_c0|92:Mi4xQ2NPUERRQUFBQUFBb0doZ0M4aGNEeVlBQUFCZ0FsVk5JcnUyWFFERmpEbUY2MkY2RWdlT1l1YWJXOWc4WUxFNGVR|221f911275f9b2c6df3c6d29c896dcada42d40a3ff5fb8b8e8c42cab6bc60b16"; anc_cap_id=638f6596fb5a4c5185e9b60f63e940b5; tst=r; q_c1=30cd5839d2944d5eaa6dfa22bd023b29|1556704558000|1556704558000; __utma=51854390.1998127898.1556704575.1556704575.1556704575.1; __utmb=51854390.0.10.1556704575; __utmc=51854390; __utmz=51854390.1556704575.1.1.utmcsr=zhihu.com|utmccn=(referral)|utmcmd=referral|utmcct=/; __utmv=51854390.100--|2=registration_date=20181214=1^3=entry_date=20181214=1; unlock_ticket="ALCiAV72qg4mAAAAYAJVTbd0yVz9x7-4HnC8lYq2zfMNdKKRCaaJoA=="; __gads=ID=428d71cf8eef109d:T=1556704877:S=ALNI_MYe60OBf-K6HH7vocWQl3IuWZcV1g'
-        })
+        session.headers.update(headers)
         
         threads = []
         for topic in topics:
@@ -56,10 +61,7 @@ def authors(e, qc, qq, uc, uq):
                 break
 
     with requests.Session() as session:
-        session.headers.update({
-            'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.103 Safari/537.36',
-            'cookie': 'tgw_l7_route=80f350dcd7c650b07bd7b485fcab5bf7; _xsrf=8WgJFvMzvXGII9bERhasbhUo1aAOY4fZ; _zap=237249fe-3997-4288-a8fb-92aefd58f1fc; d_c0="AKBoYAvIXA-PTqMisjsjaKDFOdx6u1SUJNI=|1556704493"; capsion_ticket="2|1:0|10:1556704537|14:capsion_ticket|44:Nzc0NDQyMGY1NjY1NDE3NzgzNGI1MmI1ZjEwMjk3ODg=|9a9f4f37ac5a515f0b70daa078bd1434450ef53100afead185770527a8b60e57"; z_c0="2|1:0|10:1556704546|4:z_c0|92:Mi4xQ2NPUERRQUFBQUFBb0doZ0M4aGNEeVlBQUFCZ0FsVk5JcnUyWFFERmpEbUY2MkY2RWdlT1l1YWJXOWc4WUxFNGVR|221f911275f9b2c6df3c6d29c896dcada42d40a3ff5fb8b8e8c42cab6bc60b16"; anc_cap_id=638f6596fb5a4c5185e9b60f63e940b5; tst=r; q_c1=30cd5839d2944d5eaa6dfa22bd023b29|1556704558000|1556704558000; __utma=51854390.1998127898.1556704575.1556704575.1556704575.1; __utmb=51854390.0.10.1556704575; __utmc=51854390; __utmz=51854390.1556704575.1.1.utmcsr=zhihu.com|utmccn=(referral)|utmcmd=referral|utmcct=/; __utmv=51854390.100--|2=registration_date=20181214=1^3=entry_date=20181214=1; unlock_ticket="ALCiAV72qg4mAAAAYAJVTbd0yVz9x7-4HnC8lYq2zfMNdKKRCaaJoA=="; __gads=ID=428d71cf8eef109d:T=1556704877:S=ALNI_MYe60OBf-K6HH7vocWQl3IuWZcV1g'
-        })
+        session.headers.update(headers)
 
         try:
             while not e.is_set():
@@ -84,10 +86,9 @@ def users(e, uc, uq):
                 pass
 
     with requests.Session() as session:
-        session.headers.update({
-            'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.103 Safari/537.36',
-            'cookie': 'tgw_l7_route=80f350dcd7c650b07bd7b485fcab5bf7; _xsrf=8WgJFvMzvXGII9bERhasbhUo1aAOY4fZ; _zap=237249fe-3997-4288-a8fb-92aefd58f1fc; d_c0="AKBoYAvIXA-PTqMisjsjaKDFOdx6u1SUJNI=|1556704493"; capsion_ticket="2|1:0|10:1556704537|14:capsion_ticket|44:Nzc0NDQyMGY1NjY1NDE3NzgzNGI1MmI1ZjEwMjk3ODg=|9a9f4f37ac5a515f0b70daa078bd1434450ef53100afead185770527a8b60e57"; z_c0="2|1:0|10:1556704546|4:z_c0|92:Mi4xQ2NPUERRQUFBQUFBb0doZ0M4aGNEeVlBQUFCZ0FsVk5JcnUyWFFERmpEbUY2MkY2RWdlT1l1YWJXOWc4WUxFNGVR|221f911275f9b2c6df3c6d29c896dcada42d40a3ff5fb8b8e8c42cab6bc60b16"; anc_cap_id=638f6596fb5a4c5185e9b60f63e940b5; tst=r; q_c1=30cd5839d2944d5eaa6dfa22bd023b29|1556704558000|1556704558000; __utma=51854390.1998127898.1556704575.1556704575.1556704575.1; __utmb=51854390.0.10.1556704575; __utmc=51854390; __utmz=51854390.1556704575.1.1.utmcsr=zhihu.com|utmccn=(referral)|utmcmd=referral|utmcct=/; __utmv=51854390.100--|2=registration_date=20181214=1^3=entry_date=20181214=1; unlock_ticket="ALCiAV72qg4mAAAAYAJVTbd0yVz9x7-4HnC8lYq2zfMNdKKRCaaJoA=="; __gads=ID=428d71cf8eef109d:T=1556704877:S=ALNI_MYe60OBf-K6HH7vocWQl3IuWZcV1g'
-        })
+        session.headers.update(headers)
+
+        count = 0
         
         try:
             with pymongo.MongoClient('localhost', 27017) as client:
@@ -99,19 +100,22 @@ def users(e, uc, uq):
                             uc.wait()
                         if e.is_set():
                             break
+                        count += 1
                         threading.Thread(target=worker, args=(collection, session, uq.get())).start()
         except KeyboardInterrupt:
             pass
+
+        print(f'totally parsed {count} users')
 
 if __name__ == '__main__':
     e = multiprocessing.Event()
     qc = multiprocessing.Condition()
     uc = multiprocessing.Condition()
-    qq = multiprocessing.Queue(10)
-    uq = multiprocessing.Queue(10)
+    qq = multiprocessing.Queue()
+    uq = multiprocessing.Queue()
 
     jobs = (
-        multiprocessing.Process(target=questions, args=(e, qc, qq, 19565870, 20004712)),
+        multiprocessing.Process(target=questions, args=(e, qc, qq, 19550517, 19552330, 19552079, 19553510, 19559450, 19567481, 19551769)),
         multiprocessing.Process(target=authors, args=(e, qc, qq, uc, uq)),
         multiprocessing.Process(target=users, args=(e, uc, uq))
     )
