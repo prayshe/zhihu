@@ -3,6 +3,7 @@
 import pymongo
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib import font_manager as fm
 from pylab import mpl
 import inspect
 import re
@@ -63,21 +64,18 @@ def count_google(collection):
 
     mpl.rcParams['font.sans-serif'] = ['FangSong']
     mpl.rcParams['axes.unicode_minus'] = False
+    plt.rcParams['savefig.dpi'] = 300
+    plt.rcParams['figure.dpi'] = 300
     
-    fig, ax = plt.subplots(figsize=(16,9))
+    fig, ax = plt.subplots(figsize=(8,4))
 
-    y_pos = np.arange(len(schools))
-    ax.barh(y_pos, counts, color=(0.1,0.1,1.0,0.5))
-    ax.set_yticks([])
-    ax.invert_yaxis()
-    ax.set_title('Where does most of Googlers graduate from')
+    wedges, _, _ = ax.pie(counts, autopct=lambda pct: int((pct*sum(counts)/100.)+0.5), wedgeprops=dict(width=0.5),
+                    startangle=40, textprops=dict(color="w"), counterclock=False)
 
-    for i, school in enumerate(schools):
-        ax.text(0.1, i, school, ha='left', va='center')
+    ax.legend(wedges, schools, bbox_to_anchor=(1, 0, 0.5, 1), loc='center left')
 
     fig.tight_layout()
-
-    plt.savefig(f'results/{inspect.stack()[0][3]}.png')
+    plt.savefig(f'results/{inspect.stack()[0][3]}.png', bbox_inches="tight", pad_inches=0)
 
 def count_lastCompany(collection):
     data = list(collection.aggregate(
@@ -188,21 +186,18 @@ def count_lastCompany(collection):
 
     mpl.rcParams['font.sans-serif'] = ['FangSong']
     mpl.rcParams['axes.unicode_minus'] = False
+    plt.rcParams['savefig.dpi'] = 300
+    plt.rcParams['figure.dpi'] = 300
     
-    fig, ax = plt.subplots(figsize=(16,9))
+    fig, ax = plt.subplots(figsize=(8,4))
 
-    y_pos = np.arange(len(companies))
-    ax.barh(y_pos, counts, color=(0.1,0.1,1.0,0.5))
-    ax.set_yticks([])
-    ax.invert_yaxis()
-    ax.set_title('Where does most of Googlers come from?')
+    wedges, _, _ = ax.pie(counts, autopct=lambda pct: int((pct*sum(counts)/100.)+0.5), wedgeprops=dict(width=0.5),
+                    startangle=40, textprops=dict(color="w"), counterclock=False)
 
-    for i, company in enumerate(companies):
-        ax.text(0.1, i, company, ha='left', va='center')
+    ax.legend(wedges, companies, bbox_to_anchor=(1, 0, 0.5, 1), loc='center left')
 
     fig.tight_layout()
-
-    plt.savefig(f'results/{inspect.stack()[0][3]}.png')
+    plt.savefig(f'results/{inspect.stack()[0][3]}.png', bbox_inches="tight", pad_inches=0)
 
 def count_company(collection):
     data = list(collection.aggregate(
@@ -240,21 +235,18 @@ def count_company(collection):
 
     mpl.rcParams['font.sans-serif'] = ['FangSong']
     mpl.rcParams['axes.unicode_minus'] = False
+    plt.rcParams['savefig.dpi'] = 300
+    plt.rcParams['figure.dpi'] = 300
     
-    fig, ax = plt.subplots(figsize=(16,9))
+    fig, ax = plt.subplots(figsize=(8,4))
 
-    y_pos = np.arange(len(companies))
-    ax.barh(y_pos, counts, color=(0.1,0.1,1.0,0.5))
-    ax.set_yticks([])
-    ax.invert_yaxis()
-    ax.set_title('Where does most of zhihu users come from?')
+    wedges, _, _ = ax.pie(counts, autopct=lambda pct: int((pct*sum(counts)/100.)+0.5), wedgeprops=dict(width=0.5),
+                    startangle=40, textprops=dict(color="w"), counterclock=False)
 
-    for i, company in enumerate(companies):
-        ax.text(0.1, i, company, ha='left', va='center')
+    ax.legend(wedges, companies, bbox_to_anchor=(1, 0, 0.5, 1), loc='center left')
 
     fig.tight_layout()
-
-    plt.savefig(f'results/{inspect.stack()[0][3]}.png')
+    plt.savefig(f'results/{inspect.stack()[0][3]}.png', bbox_inches="tight", pad_inches=0)
 
 def count_nextCompany(collection):
     data = list(collection.aggregate(
@@ -365,21 +357,18 @@ def count_nextCompany(collection):
 
     mpl.rcParams['font.sans-serif'] = ['FangSong']
     mpl.rcParams['axes.unicode_minus'] = False
+    plt.rcParams['savefig.dpi'] = 300
+    plt.rcParams['figure.dpi'] = 300
     
-    fig, ax = plt.subplots(figsize=(16,9))
+    fig, ax = plt.subplots(figsize=(8,4))
 
-    y_pos = np.arange(len(companies))
-    ax.barh(y_pos, counts, color=(0.1,0.1,1.0,0.5))
-    ax.set_yticks([])
-    ax.invert_yaxis()
-    ax.set_title('Where does most of Microsoft employees go to?')
+    wedges, _, _ = ax.pie(counts, autopct=lambda pct: int((pct*sum(counts)/100.)+0.5), wedgeprops=dict(width=0.5),
+                    startangle=40, textprops=dict(color="w"), counterclock=False)
 
-    for i, company in enumerate(companies):
-        ax.text(0.1, i, company, ha='left', va='center')
+    ax.legend(wedges, companies, bbox_to_anchor=(1, 0, 0.5, 1), loc='center left')
 
     fig.tight_layout()
-
-    plt.savefig(f'results/{inspect.stack()[0][3]}.png')
+    plt.savefig(f'results/{inspect.stack()[0][3]}.png', bbox_inches="tight", pad_inches=0)
 
 with pymongo.MongoClient('localhost', 27017) as client:
     collection = client.zhihu.user
