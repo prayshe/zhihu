@@ -25,7 +25,7 @@ class Get(Call):
                 if response.status_code == 200:
                     return func(session, body=response.json())
             except:
-                pass
+                print(f'error {url}')
         return wrapper
 
 class Gets(Call):
@@ -49,7 +49,7 @@ class Gets(Call):
                     self._params['offset'] += self._params['limit']
                     response = session.get(url, params=self._params, timeout=10)
             except:
-                pass
+                print(f'error {url}')
         return wrapper
 
 @Get('https://www.zhihu.com/api/v4/members/{user}', {'include': 'gender, educations, employments'})
